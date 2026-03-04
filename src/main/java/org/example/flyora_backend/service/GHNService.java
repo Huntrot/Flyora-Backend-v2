@@ -49,6 +49,8 @@ public class GHNService {
         private final RestTemplate restTemplate = new RestTemplate();
         private final ObjectMapper objectMapper = new ObjectMapper();
 
+        private static final String GHN_DETAIL_URL =
+            "https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/detail";
         /**
          * Lấy danh sách Tỉnh/Thành từ GHN
          */
@@ -224,5 +226,42 @@ public class GHNService {
                         throw new RuntimeException("Không thể lấy thông tin đơn hàng từ GHN. Chi tiết: "
                                         + e.getResponseBodyAsString(), e);
                 }
+        }
+
+        public Map<String, Object> getOrderDetail(String trackingNumber) {
+
+        HttpHeaders headers = createHeaders();
+
+        Map<String, String> requestBody = Map.of(
+                "order_code", trackingNumber
+        );
+
+        HttpEntity<Map<String, String>> entity =
+                new HttpEntity<>(requestBody, headers);
+
+        ResponseEntity<Map<String, Object>> response =
+                restTemplate.exchange(
+                        GHN_DETAIL_URL,
+                        HttpMethod.POST,
+                        entity,
+                        new ParameterizedTypeReference<Map<String, Object>>() {}
+                );
+
+        if (response.getStatusCode().is2xxSuccessful()
+                && response.getBody() != null) {
+
+                Object dataObj = response.getBody().get("data");
+
+                if (dataObj instanceof Map<?, ?> dataMap) {
+
+                // Convert sang Map<String, Object> an toàn
+                return objectMapper.convertValue(
+                        dataMap,
+                        new com.fasterxml.jackson.core.type.TypeReference<Map<String, Object>>() {}
+                );
+                }
+        }
+
+        throw new RuntimeException("Không lấy được trạng thái từ GHN");
         }
 }

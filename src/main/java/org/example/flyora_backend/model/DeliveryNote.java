@@ -42,4 +42,10 @@ public class DeliveryNote {
 
     @Column(name = "actual_delivery_date")
     private Instant actualDeliveryDate;
+
+    @Column(name = "last_checked_at")
+    private Instant lastCheckedAt;
+
+    @Column(name = "completed")
+    private Boolean completed = false;
 }

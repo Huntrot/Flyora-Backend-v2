@@ -2,6 +2,7 @@ package org.example.flyora_backend.controller;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.example.flyora_backend.DTOs.CreateOrderDTO;
 import org.example.flyora_backend.DTOs.CreatePaymentDTO;
@@ -10,7 +11,9 @@ import org.example.flyora_backend.service.AccessLogService;
 import org.example.flyora_backend.service.OrderService;
 import org.example.flyora_backend.service.PaymentService;
 import org.example.flyora_backend.Utils.VNPayUtil;
+import org.example.flyora_backend.model.DeliveryNote;
 import org.example.flyora_backend.model.Order;
+import org.example.flyora_backend.repository.DeliveryNoteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,6 +30,7 @@ import lombok.*;
 public class OrderController {
 
     private final OrderService orderService;
+    private final DeliveryNoteRepository deliveryNoteRepository;
 
     @Autowired
     private AccessLogService accessLogService;
@@ -158,4 +162,69 @@ public class OrderController {
         }
     }
 
+    @GetMapping("/orders/{orderCode}/tracking")
+    @Operation(
+        summary = "Theo dõi trạng thái đơn hàng theo mã đơn",
+        description = """
+            API dùng để lấy thông tin trạng thái vận chuyển của một đơn hàng cụ thể.
+            Dùng cho trang "Theo dõi đơn hàng" ở frontend.
+
+            🔑 **Quyền truy cập:** Khách hàng đã đăng nhập và là chủ sở hữu đơn hàng.
+
+            ✅ **Tham số yêu cầu:**
+            - `orderCode` (path variable): Mã đơn hàng cần tra cứu.
+            - `customerId` (param): ID của khách hàng yêu cầu tra cứu (được dùng để xác thực quyền sở hữu đơn hàng).
+
+            🔒 **Cơ chế bảo mật:**
+            - Hệ thống sẽ kiểm tra đơn hàng có tồn tại hay không.
+            - Sau đó xác minh `customerId` có khớp với chủ sở hữu đơn hàng không.
+            - Nếu không khớp → trả về HTTP 403 (Forbidden).
+
+            🔁 **Trả về:**
+            - `orderCode`: Mã đơn hàng.
+            - `status`: Trạng thái hiện tại của đơn hàng trong hệ thống (PENDING, Shipping, DELIVERED, CANCELLED...).
+            - `trackingNumber`: Mã vận đơn từ GHN (nếu đã tạo vận chuyển).
+            - `lastUpdated`: Thời điểm gần nhất trạng thái vận chuyển được đồng bộ.
+
+            📌 **Lưu ý:**
+            - Nếu đơn hàng chưa tạo vận chuyển (ví dụ: còn PENDING), API sẽ chỉ trả về `orderCode` và `status`.
+            - API này chỉ phục vụ frontend, không dùng cho GHN webhook.
+            """
+    )
+    public ResponseEntity<?> getTracking(
+            @PathVariable String orderCode,
+            @RequestParam Integer customerId) {
+
+        Order order = orderService.getOrderByCode(orderCode);
+
+        if (order == null) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("error", "Order not found"));
+        }
+
+        // ✅ Kiểm tra đúng chủ đơn
+        if (!order.getCustomer().getId().equals(customerId)) {
+            return ResponseEntity.status(403)
+                    .body(Map.of("error", "Bạn không có quyền xem đơn này"));
+        }
+
+        Optional<DeliveryNote> noteOpt =
+                deliveryNoteRepository.findByOrder(order);
+
+        if (noteOpt.isEmpty()) {
+            return ResponseEntity.ok(Map.of(
+                    "orderCode", order.getOrderCode(),
+                    "status", order.getStatus()
+            ));
+        }
+
+        DeliveryNote note = noteOpt.get();
+
+        return ResponseEntity.ok(Map.of(
+                "orderCode", order.getOrderCode(),
+                "status", order.getStatus(),
+                "trackingNumber", note.getTrackingNumber(),
+                "lastUpdated", note.getLastCheckedAt()
+        ));
+    }
 }

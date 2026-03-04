@@ -13,4 +13,6 @@ public interface EmailService {
     boolean verifyOtp(String key, String otp);
 
     void sendOrderConfirmationEmail(Order order);
+    
+    void sendStatusUpdateEmail(Order order);
 }

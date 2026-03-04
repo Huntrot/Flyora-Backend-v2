@@ -102,5 +102,43 @@ public class EmailServiceImpl implements EmailService {
 
         sendEmail(emailDTO);
     }
+
+    @Override
+    public void sendStatusUpdateEmail(Order order) {
+
+        try {
+
+            MimeMessage message =
+                    mailSender.createMimeMessage();
+
+            MimeMessageHelper helper =
+                    new MimeMessageHelper(message, true, "UTF-8");
+
+            String customerEmail =
+                    order.getCustomer().getEmail();
+
+            helper.setTo(customerEmail);
+            helper.setSubject("Cập nhật trạng thái đơn hàng #" 
+                            + order.getOrderCode());
+
+            String htmlContent = """
+                <h3>Xin chào %s,</h3>
+                <p>Đơn hàng <b>#%s</b> của bạn đã được cập nhật trạng thái:</p>
+                <h2 style="color:blue;">%s</h2>
+                <p>Cảm ơn bạn đã mua sắm tại Flyora 💙</p>
+                """.formatted(
+                    order.getCustomer().getName(),
+                    order.getOrderCode(),
+                    order.getStatus()
+            );
+
+            helper.setText(htmlContent, true);
+
+            mailSender.send(message);
+
+        } catch (Exception e) {
+            System.out.println("Send mail error: " + e.getMessage());
+        }
+    }
 }
     
