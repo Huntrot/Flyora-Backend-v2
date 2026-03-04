@@ -11,6 +11,7 @@ import org.example.flyora_backend.repository.OrderRepository;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.HttpClientErrorException;
 
 import lombok.RequiredArgsConstructor;
 
@@ -63,8 +64,30 @@ public class GHNPollingService {
                     emailService.sendStatusUpdateEmail(order);
                 }
 
+            } catch (HttpClientErrorException.BadRequest ex) {
+
+                String responseBody = ex.getResponseBodyAsString();
+
+                if (responseBody.contains("Đơn hàng không tồn tại")) {
+
+                    System.out.println("Tracking không tồn tại trên GHN → bỏ qua: "
+                            + trackingNumber);
+
+                    note.setCompleted(true);   // 👈 QUAN TRỌNG
+                    note.setStatus("INVALID");
+                    note.setLastCheckedAt(Instant.now());
+
+                    deliveryNoteRepository.save(note);
+
+                } else {
+                    System.out.println("GHN 400 error khác: "
+                            + responseBody);
+                }
+
             } catch (Exception e) {
-                System.out.println("GHN polling error: " + e.getMessage());
+
+                System.out.println("GHN polling error: "
+                        + e.getMessage());
             }
         }
     }
