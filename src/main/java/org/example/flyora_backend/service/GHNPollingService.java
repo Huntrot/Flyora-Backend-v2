@@ -10,7 +10,6 @@ import org.example.flyora_backend.repository.DeliveryNoteRepository;
 import org.example.flyora_backend.repository.OrderRepository;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
 
 import lombok.RequiredArgsConstructor;
@@ -24,7 +23,6 @@ public class GHNPollingService {
     private final EmailService emailService;
     
     @Scheduled(fixedRate = 300000) // 5 phút
-    @Transactional
     public void syncShippingStatus() {
 
         List<DeliveryNote> notes =
