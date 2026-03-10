@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
+    private final HybridSearchService hybridSearchService;
 
     @Override
     public List<ProductListDTO> filterProducts(ProductFilterDTO filter) {
@@ -62,7 +63,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<ProductListDTO> searchByName(String name) {
-        return productRepository.searchByName(name);
+        return hybridSearchService.hybridSearch(name);
     }
 
     @Override
