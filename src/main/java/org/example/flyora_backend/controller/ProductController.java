@@ -52,7 +52,7 @@ public class ProductController {
         return ResponseEntity.ok(productService.getTop15BestSellers());
     }
 
-    @Operation(summary = "Tìm sản phẩm theo tên", description = "Tìm kiếm sản phẩm theo từ khóa.")
+    @Operation(summary = "Tìm sản phẩm (Hybrid Search - Tự động)", description = "Tự động dùng AI nếu input dài/phức tạp, dùng search truyền thống nếu ngắn/đơn giản.")
     @GetMapping("/search")
     public ResponseEntity<List<ProductListDTO>> searchProductsByName(@RequestParam String name) {
         return ResponseEntity.ok(productService.searchByName(name));

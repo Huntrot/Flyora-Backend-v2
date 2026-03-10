@@ -2,6 +2,7 @@ package org.example.flyora_backend.service;
 
 import org.example.flyora_backend.DTOs.CreateProductDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -16,14 +17,17 @@ import java.util.ArrayList;
 @Service
 public class AIServiceImpl implements AIService {
     
-    @Autowired
-    private WebClient webClient;
+    private final WebClient webClient;
     
     @Autowired
     private FallbackDescriptionService fallbackService;
     
     @Value("${gemini.api.key}")
     private String geminiApiKey;
+
+    public AIServiceImpl(@Qualifier("geminiWebClient") WebClient webClient) {
+        this.webClient = webClient;
+    }
     
     @Override
     public String generateProductDescription(CreateProductDTO request) {
@@ -59,7 +63,7 @@ public class AIServiceImpl implements AIService {
                 requestBody.put("contents", contents);
                 
                 Map<String, Object> response = webClient.post()
-                        .uri("/models/gemini-2.0-flash-lite:generateContent?key=" + geminiApiKey)
+                        .uri("/models/gemini-2.5-flash:generateContent?key=" + geminiApiKey)
                         .bodyValue(requestBody)
                         .retrieve()
                         .bodyToMono(Map.class)
