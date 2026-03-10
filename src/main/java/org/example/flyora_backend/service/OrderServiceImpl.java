@@ -45,8 +45,9 @@ public class OrderServiceImpl implements OrderService {
         Order order = new Order();
         order.setId(idGeneratorUtil.generateOrderId());
 
-        Customer customer = customerRepository.findById(dto.getCustomerId())
-                .orElseThrow(() -> new RuntimeException("Customer not found with ID: " + dto.getCustomerId()));
+        Customer customer = customerRepository
+            .findByAccountId(dto.getCustomerId())
+            .orElseThrow(() -> new RuntimeException("Customer not found with accountId: " + dto.getCustomerId()));
         order.setCustomer(customer);
         order.setStatus("PENDING");
         order.setCreatedAt(new Timestamp(System.currentTimeMillis()));
