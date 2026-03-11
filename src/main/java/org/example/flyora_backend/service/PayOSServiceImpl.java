@@ -37,7 +37,7 @@ public class PayOSServiceImpl implements PayOSService {
             PaymentData paymentData = PaymentData.builder()
                     .orderCode(Long.parseLong(orderCode)) // phải là Long hợp lệ
                     .amount(amount)
-                    .description(orderCode)
+                    .description("DH" + orderCode)
 
                     .returnUrl("https://flyora-frontend.vercel.app/success-payment") 
 
