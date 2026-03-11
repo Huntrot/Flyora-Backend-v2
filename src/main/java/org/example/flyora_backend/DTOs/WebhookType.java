@@ -25,7 +25,7 @@
 package org.example.flyora_backend.DTOs;
 
 import lombok.Data;
-import vn.payos.type.WebhookData;
+import vn.payos.model.webhooks.WebhookData;
 
 @Data
 public class WebhookType {
