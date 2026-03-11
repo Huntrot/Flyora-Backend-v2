@@ -10,9 +10,9 @@ import org.example.flyora_backend.repository.OrderRepository;
 
 import org.springframework.stereotype.Service;
 import vn.payos.PayOS;
-import vn.payos.type.CheckoutResponseData;
-import vn.payos.type.PaymentData;
-import vn.payos.type.WebhookData;
+import vn.payos.model.v2.paymentRequests.CreatePaymentLinkRequest;
+import vn.payos.model.v2.paymentRequests.CreatePaymentLinkResponse;
+import vn.payos.model.webhooks.WebhookData;
 
 import java.util.Map;
 
@@ -34,9 +34,9 @@ public class PayOSServiceImpl implements PayOSService {
         String orderCode = order.getOrderCode(); // ✅ Lấy từ DB
 
         try {
-            PaymentData paymentData = PaymentData.builder()
+            CreatePaymentLinkRequest paymentData = CreatePaymentLinkRequest.builder()
                     .orderCode(Long.parseLong(orderCode)) // phải là Long hợp lệ
-                    .amount(amount)
+                    .amount((long) amount) // nếu amount = 0 thì lấy từ order
                     .description("DH" + orderCode)
 
                     .returnUrl("https://flyora-frontend.vercel.app/success-payment") 
@@ -44,7 +44,7 @@ public class PayOSServiceImpl implements PayOSService {
                     .cancelUrl("https://flyora-frontend.vercel.app/cancel-payment") 
                     .build();
 
-            CheckoutResponseData response = payOS.createPaymentLink(paymentData);
+            CreatePaymentLinkResponse response = payOS.paymentRequests().create(paymentData);
 
             log.info("Tạo link thanh toán thành công: {}", response.getCheckoutUrl());
 
