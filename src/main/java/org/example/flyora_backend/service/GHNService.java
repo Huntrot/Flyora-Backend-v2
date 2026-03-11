@@ -158,7 +158,8 @@ public class GHNService {
                 requestBody.put("width", feeRequest.getWidth());
                 requestBody.put("height", feeRequest.getHeight());
                 requestBody.put("insurance_value", feeRequest.getInsurance_value());
-                requestBody.put("service_id", feeRequest.getService_id());
+                Integer serviceId = getServiceId(feeRequest.getTo_district_id());
+                requestBody.put("service_id", serviceId);
 
                 // ======================================================================
                 // KẾT THÚC PHẦN BỔ SUNG
@@ -263,5 +264,31 @@ public class GHNService {
         }
 
         throw new RuntimeException("Không lấy được trạng thái từ GHN");
+        }
+
+        public Integer getServiceId(int toDistrictId) {
+
+        HttpHeaders headers = createHeaders();
+
+        Map<String, Object> body = new HashMap<>();
+        body.put("shop_id", Integer.parseInt(ghnShopId));
+        body.put("from_district", shopDistrictId);
+        body.put("to_district", toDistrictId);
+
+        HttpEntity<Map<String, Object>> entity =
+                new HttpEntity<>(body, headers);
+
+        ResponseEntity<Map<String, Object>> response =
+                restTemplate.exchange(
+                        API_BASE_URL + "/v2/shipping-order/available-services",
+                        HttpMethod.POST,
+                        entity,
+                        new ParameterizedTypeReference<>() {}
+                );
+
+        List<Map<String,Object>> services =
+                (List<Map<String,Object>>) response.getBody().get("data");
+
+        return (Integer) services.get(0).get("service_id");
         }
 }
