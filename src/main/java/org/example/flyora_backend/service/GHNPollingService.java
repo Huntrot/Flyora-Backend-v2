@@ -27,7 +27,7 @@ public class GHNPollingService {
     @Scheduled(fixedRate = 300000)
     public void syncShippingStatus() {
 
-        List<DeliveryNote> notes = deliveryNoteRepository.findByCompletedFalse();
+        List<DeliveryNote> notes = deliveryNoteRepository.findIncompleteWithOrder();
 
         for (DeliveryNote note : notes) {
 

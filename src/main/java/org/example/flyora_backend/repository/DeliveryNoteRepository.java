@@ -19,4 +19,7 @@ public interface DeliveryNoteRepository extends JpaRepository<DeliveryNote, Inte
     List<DeliveryNote> findByCompletedFalse();
     
     Optional<DeliveryNote> findByOrder(Order order);
+
+    @Query("SELECT dn FROM DeliveryNote dn JOIN FETCH dn.order WHERE dn.completed = false")
+    List<DeliveryNote> findIncompleteWithOrder();
 }
