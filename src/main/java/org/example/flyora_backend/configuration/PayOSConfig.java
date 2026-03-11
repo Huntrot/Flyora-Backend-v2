@@ -10,9 +10,9 @@ public class PayOSConfig {
     @Bean
     public PayOS payOS() {
         return new PayOS(
-            "b4be97a8-d346-4128-8494-22c8f931023f", // Client ID
-            "c76bb3a5-fb30-4643-a33d-e36d0f18f1b2", // API Key
-            "0505c89b495c811311f0c02ad65f4ef0efbb8a5d2e4c2556fd2ca004086207c6" // Checksum
+            "3dc81b4b-255a-416a-a007-881821442b20", // Client ID
+            "4370621a-be81-4a53-bdda-6046763f433a", // API Key
+            "29fbe7cb4109b098634b0a3dd62fba43abfda3a8460431ec6daa08c8e56bc27a" // Checksum
         );
     }
 }
