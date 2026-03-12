@@ -19,9 +19,9 @@ public class NotificationController {
     private final NotificationService notificationService;
 
     /**
-     * ✅ API lấy danh sách thông báo
-     * 🔹 GET /api/v1/notifications?accountId=1
-     * 🔸 Trả: danh sách thông báo mới
+     * API lấy danh sách thông báo
+     * GET /api/v1/notifications?accountId=1
+     * Trả: danh sách thông báo mới
      */
     @GetMapping
     @Operation(summary = "Lấy danh sách thông báo", description = "Trả về danh sách thông báo theo account.")

@@ -37,16 +37,15 @@ public class EmailController {
         description = """
             Gửi email tùy chỉnh đến người nhận.
 
-            ✅ Trường yêu cầu trong body (EmailDTO):
+            Trường yêu cầu trong body (EmailDTO):
             - to (String)
             - subject (String)
             - content (String - HTML được hỗ trợ)
 
-            🔁 Trả về: message nếu gửi thành công.
+            Trả về: message nếu gửi thành công.
         """
     )
     public ResponseEntity<?> sendEmail(@RequestBody EmailDTO emailDTO) {
-        // Implementation for sending email
         emailService.sendEmail(emailDTO);
         return ResponseEntity.ok("Email gửi thành công");
     }
@@ -57,7 +56,7 @@ public class EmailController {
         description = """
             Hoàn tất quá trình đăng nhập bằng cách xác thực OTP đã gửi qua email.
 
-            🔐 Yêu cầu:
+            Yêu cầu:
             - Header: Authorization: Bearer <PRE_AUTH_TOKEN>
             - Body (OTPverifyDTO):
                 - otp (String)
@@ -68,7 +67,7 @@ public class EmailController {
             3. Nếu đúng → cấp JWT chính thức
             4. Nếu sai hoặc hết hạn → trả về 401
 
-            🔁 Trả về:
+            Trả về:
             - message
             - token (JWT chính thức nếu OTP hợp lệ)
         """
@@ -91,7 +90,6 @@ public class EmailController {
         Account account = accountRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy tài khoản"));
 
-        //Sinh JWT thật (full quyền)
         String fullToken = jwtUtil.generateToken(account);
 
         return ResponseEntity.ok(Map.of(

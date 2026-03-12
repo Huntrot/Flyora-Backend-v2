@@ -23,10 +23,10 @@ public class IssueController {
     private AccessLogService accessLogService;
 
     /**
-     * ✅ API gửi phản hồi lỗi đơn hàng
-     * 🔹 POST /api/v1/issues
-     * 🔸 Nhận: customerId, orderId, content
-     * 🔸 Trả: message xác nhận
+     * API gửi phản hồi lỗi đơn hàng
+     * POST /api/v1/issues
+     * Nhận: customerId, orderId, content
+     * Trả: message xác nhận
      */
     @PostMapping("/submit")
     @Operation(

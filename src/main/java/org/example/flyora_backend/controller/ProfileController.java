@@ -32,9 +32,9 @@ public class ProfileController {
         description = """
             Trả về thông tin hồ sơ người dùng từ token.
 
-            📌 Header cần có: `Authorization: Bearer {token}`
+            Header cần có: `Authorization: Bearer {token}`
 
-            🔁 Trả về: ProfileDTO gồm thông tin cơ bản của người dùng.
+            Trả về: ProfileDTO gồm thông tin cơ bản của người dùng.
         """
     )
     public ResponseEntity<ProfileDTO> getProfile(@RequestHeader("Authorization") String token) {
@@ -50,10 +50,10 @@ public class ProfileController {
         description = """
             Cập nhật thông tin hồ sơ như tên, email, số điện thoại (tùy loại tài khoản).
 
-            📌 Header: `Authorization: Bearer {token}`
-            📌 Body: UpdateProfileDTO
+            Header: `Authorization: Bearer {token}`
+            Body: UpdateProfileDTO
 
-            🔁 Trả về: 200 OK nếu thành công.
+            Trả về: 200 OK nếu thành công.
         """
     )
     public ResponseEntity<Void> updateProfile(@RequestHeader("Authorization") String token,
@@ -70,10 +70,10 @@ public class ProfileController {
         description = """
             Thay đổi mật khẩu cho tài khoản hiện tại.
 
-            📌 Header: `Authorization: Bearer {token}`
-            📌 Body: ChangePasswordDTO gồm oldPassword và newPassword
+            Header: `Authorization: Bearer {token}`
+            Body: ChangePasswordDTO gồm oldPassword và newPassword
 
-            🔁 Trả về: 200 OK nếu thay đổi thành công.
+            Trả về: 200 OK nếu thay đổi thành công.
         """
     )
     public ResponseEntity<Void> changePassword(

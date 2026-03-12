@@ -25,14 +25,14 @@ public class InfoController {
     @Operation(
         summary = "Lấy danh sách tin tức có kèm ảnh preview",
         description = """
-            ✅ Trả về danh sách các bài viết (`NewsArticleResponseDTO`) có thêm ảnh đại diện.
+            Trả về danh sách các bài viết (`NewsArticleResponseDTO`) có thêm ảnh đại diện.
 
             Mỗi bài viết gồm:
             - id
             - title
             - url
             - createdAt
-            - imageUrl ✅
+            - imageUrl (URL của ảnh đại diện, có thể null nếu bài viết không có ảnh)
         """
     )
     public ResponseEntity<List<NewsArticleResponseDTO>> getNewsWithImage() {
@@ -45,7 +45,7 @@ public class InfoController {
     @Operation(
         summary = "Lấy danh sách câu hỏi thường gặp (FAQ)",
         description = """
-            ✅ Trả về danh sách câu hỏi (`Faq`) được sử dụng phổ biến trong hệ thống.
+            Trả về danh sách câu hỏi (`Faq`) được sử dụng phổ biến trong hệ thống.
 
             Mỗi mục FAQ gồm:
             - id (Integer)
@@ -61,7 +61,7 @@ public class InfoController {
     @Operation(
         summary = "Lấy danh sách chính sách hệ thống",
         description = """
-            ✅ Trả về toàn bộ chính sách đang được áp dụng (`Policy`).
+            Trả về toàn bộ chính sách đang được áp dụng (`Policy`).
 
             Mỗi chính sách gồm:
             - id (Integer)

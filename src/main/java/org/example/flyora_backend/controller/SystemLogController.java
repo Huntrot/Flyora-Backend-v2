@@ -27,13 +27,13 @@ public class SystemLogController {
     //         Dùng để ghi lại các hành động quan trọng do Admin thực hiện.
     //         **API này thường được gọi từ bên trong các service khác, không phải từ frontend.**
             
-    //         🔑 **Quyền truy cập:** Chỉ dành cho Admin.
+    //         **Quyền truy cập:** Chỉ dành cho Admin.
             
-    //         ✅ **Body yêu cầu (SystemLogDTO):**
+    //         **Body yêu cầu (SystemLogDTO):**
     //         - `adminId` (integer): ID của Admin thực hiện hành động.
     //         - `action` (string): Mô tả hành động (ví dụ: "Phê duyệt tài khoản ShopOwner #123").
             
-    //         🔁 **Trả về:** Thông báo thành công.
+    //         **Trả về:** Thông báo thành công.
     //         """
     // )
     // public ResponseEntity<?> createLog(@RequestBody SystemLogDTO logDTO) {
@@ -51,9 +51,9 @@ public class SystemLogController {
     //     description = """
     //         Lấy danh sách tất cả các hành động đã được ghi lại trong hệ thống, sắp xếp theo thứ tự mới nhất.
             
-    //         🔑 **Quyền truy cập:** Chỉ dành cho Admin.
+    //         **Quyền truy cập:** Chỉ dành cho Admin.
             
-    //         🔁 **Trả về:** Một danh sách các đối tượng `SystemLogDTO`, mỗi đối tượng bao gồm ID log, ID admin, tên admin, hành động và thời gian.
+    //         **Trả về:** Một danh sách các đối tượng `SystemLogDTO`, mỗi đối tượng bao gồm ID log, ID admin, tên admin, hành động và thời gian.
     //         """
     // )
     // public ResponseEntity<List<SystemLogDTO>> getAllLogs() {

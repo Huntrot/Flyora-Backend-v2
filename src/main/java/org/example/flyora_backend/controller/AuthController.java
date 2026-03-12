@@ -25,14 +25,14 @@ public class AuthController {
         description = """
             Tạo tài khoản khách hàng mới.
 
-            ✅ Trường yêu cầu trong body (RegisterDTO):
+            Trường yêu cầu trong body (RegisterDTO):
             - username (String)
             - password (String)
             - email (String)
             - phone (String)
             - name (String)
 
-            🔁 Trả về: message và userId nếu thành công.
+            Trả về: message và userId nếu thành công.
         """
     )
     public ResponseEntity<?> registerCustomer(@Valid @RequestBody RegisterDTO request) {
@@ -45,11 +45,11 @@ public class AuthController {
         description = """
             Đăng nhập hệ thống với tài khoản khách hàng.
 
-            ✅ Trường yêu cầu trong body (LoginDTO):
+            Trường yêu cầu trong body (LoginDTO):
             - username (String)
             - password (String)
 
-            🔁 Trả về: userId, name, role, token nếu đăng nhập thành công.
+            Trả về: userId, name, role, token nếu đăng nhập thành công.
         """
     )
     public ResponseEntity<?> loginCustomer(@Valid @RequestBody LoginDTO request) {        

@@ -43,13 +43,13 @@ public class OrderController {
             Tạo một đơn hàng mới trong hệ thống với trạng thái "PENDING".
             Đây là bước đầu tiên và bắt buộc trong quy trình đặt hàng.
 
-            🔑 **Quyền truy cập:** Khách hàng đã đăng nhập.
+            **Quyền truy cập:** Khách hàng đã đăng nhập.
 
-            ✅ **Body yêu cầu (CreateOrderDTO):**
+            **Body yêu cầu (CreateOrderDTO):**
             - `customerId` (integer): ID của khách hàng đang đặt hàng.
             - `items` (array): Danh sách sản phẩm, mỗi sản phẩm gồm `productId` và `quantity`.
 
-            🔁 **Trả về:** `orderId` và `status` ("PENDING") của đơn hàng vừa tạo.
+            **Trả về:** `orderId` và `status` ("PENDING") của đơn hàng vừa tạo.
             """)
     public ResponseEntity<?> createOrder(@RequestBody CreateOrderDTO dto) {
         accessLogService.logAction(dto.getCustomerId(), "Tạo đơn hàng");
@@ -61,16 +61,16 @@ public class OrderController {
             Xác nhận phương thức thanh toán cho một đơn hàng đã tạo ở Bước 1.
             **Đây là API then chốt để kích hoạt việc tự động tạo đơn vận chuyển và lưu vào database.**
 
-            🔑 **Quyền truy cập:** Khách hàng đã đăng nhập.
+            **Quyền truy cập:** Khách hàng đã đăng nhập.
 
-            ✅ **Body yêu cầu (CreatePaymentDTO):**
+            **Body yêu cầu (CreatePaymentDTO):**
             - `orderId` (integer): ID của đơn hàng (lấy từ API Bước 1).
             - `customerId` (integer): ID của khách hàng.
             - `paymentMethodId` (integer): 1 (VNPay) hoặc 2 (COD).
             - `amount` (long, *chỉ cho VNPay*): Tổng số tiền thanh toán.
             - **Các trường địa chỉ (bắt buộc cho COD):** `to_name`, `to_phone`, `to_address`, `to_ward_code`, `to_district_id`.
 
-            🔁 **Hành vi và Kết quả trả về:**
+            **Hành vi và Kết quả trả về:**
             - **Với Payos (1):** Trả về một `paymentUrl` để frontend chuyển hướng người dùng. **Việc giao hàng sẽ được kích hoạt ở API callback.**
             - **Với COD (2):** **Hệ thống sẽ tự động gọi GHN để tạo đơn vận chuyển, sau đó lưu mã vận đơn và cập nhật trạng thái đơn hàng thành "Shipping".** Trả về `paymentId` và `orderStatus`.
             """)
@@ -87,7 +87,7 @@ public class OrderController {
                 String url = result.get("paymentUrl");
                 String payosOrderCode = result.get("orderCode");
 
-                // ✅ Gán orderCode từ PayOS vào DB
+                // Gán orderCode từ PayOS vào DB
                 orderService.attachOrderCode(dto.getOrderId(), payosOrderCode);
 
                 return ResponseEntity.ok(Map.of(
@@ -119,7 +119,7 @@ public class OrderController {
         String vnp_TxnRef = params.get("vnp_TxnRef");
 
         if ("00".equals(vnp_ResponseCode)) {
-            // ✅ Thành công: cập nhật trạng thái đơn hàng + payment
+            // Thành công: cập nhật trạng thái đơn hàng + payment
             // Có thể gọi orderService.markOrderAsPaidByTxnRef(vnp_TxnRef);
             return ResponseEntity.ok("Thanh toán thành công. Mã giao dịch: " + vnp_TxnRef);
         } else {
@@ -131,11 +131,11 @@ public class OrderController {
     @Operation(summary = "Xem lịch sử đơn hàng của khách hàng", description = """
             Lấy danh sách tất cả các đơn hàng đã đặt của một khách hàng cụ thể, sắp xếp theo thứ tự mới nhất.
 
-            🔑 **Quyền truy cập:** Khách hàng đã đăng nhập.
+            **Quyền truy cập:** Khách hàng đã đăng nhập.
 
             - **`customerId`** (param): ID của khách hàng cần xem lịch sử.
 
-            🔁 **Trả về:** Danh sách đơn hàng, mỗi đơn hàng bao gồm thông tin chung và danh sách chi tiết các sản phẩm.
+            **Trả về:** Danh sách đơn hàng, mỗi đơn hàng bao gồm thông tin chung và danh sách chi tiết các sản phẩm.
             """)
     public ResponseEntity<List<OrderHistoryDTO>> getMyOrders(@RequestParam Integer customerId) {
         accessLogService.logAction(customerId, "Xem lịch sử đơn hàng");
@@ -169,24 +169,24 @@ public class OrderController {
             API dùng để lấy thông tin trạng thái vận chuyển của một đơn hàng cụ thể.
             Dùng cho trang "Theo dõi đơn hàng" ở frontend.
 
-            🔑 **Quyền truy cập:** Khách hàng đã đăng nhập và là chủ sở hữu đơn hàng.
+            **Quyền truy cập:** Khách hàng đã đăng nhập và là chủ sở hữu đơn hàng.
 
-            ✅ **Tham số yêu cầu:**
+            **Tham số yêu cầu:**
             - `orderCode` (path variable): Mã đơn hàng cần tra cứu.
             - `customerId` (param): ID của khách hàng yêu cầu tra cứu (được dùng để xác thực quyền sở hữu đơn hàng).
 
-            🔒 **Cơ chế bảo mật:**
+            **Cơ chế bảo mật:**
             - Hệ thống sẽ kiểm tra đơn hàng có tồn tại hay không.
             - Sau đó xác minh `customerId` có khớp với chủ sở hữu đơn hàng không.
             - Nếu không khớp → trả về HTTP 403 (Forbidden).
 
-            🔁 **Trả về:**
+            **Trả về:**
             - `orderCode`: Mã đơn hàng.
             - `status`: Trạng thái hiện tại của đơn hàng trong hệ thống (PENDING, Shipping, DELIVERED, CANCELLED...).
             - `trackingNumber`: Mã vận đơn từ GHN (nếu đã tạo vận chuyển).
             - `lastUpdated`: Thời điểm gần nhất trạng thái vận chuyển được đồng bộ.
 
-            📌 **Lưu ý:**
+            **Lưu ý:**
             - Nếu đơn hàng chưa tạo vận chuyển (ví dụ: còn PENDING), API sẽ chỉ trả về `orderCode` và `status`.
             - API này chỉ phục vụ frontend, không dùng cho GHN webhook.
             """
@@ -202,7 +202,7 @@ public class OrderController {
                     .body(Map.of("error", "Order not found"));
         }
 
-        // ✅ Kiểm tra đúng chủ đơn
+        // Kiểm tra đúng chủ đơn
         if (!order.getCustomer().getId().equals(customerId)) {
             return ResponseEntity.status(403)
                     .body(Map.of("error", "Bạn không có quyền xem đơn này"));

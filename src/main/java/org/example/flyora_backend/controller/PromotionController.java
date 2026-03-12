@@ -19,9 +19,9 @@ public class PromotionController {
     private final PromotionService promotionService;
 
     /**
-     * ✅ API lấy danh sách khuyến mãi
-     * 🔹 GET /api/v1/promotions?customerId=1
-     * 🔸 Trả: danh sách mã khuyến mãi theo khách hàng
+     * API lấy danh sách khuyến mãi
+     * GET /api/v1/promotions?customerId=1
+     * Trả: danh sách mã khuyến mãi theo khách hàng
      */
     @GetMapping
     @Operation(summary = "Lấy danh sách mã khuyến mãi", description = "Trả về danh sách mã giảm giá cho khách hàng.")

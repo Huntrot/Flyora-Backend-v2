@@ -57,7 +57,7 @@ public class AuthServiceImpl implements AuthService {
                 .orElseThrow(() -> new RuntimeException("Role CUSTOMER không tồn tại"));
 
         Account account = new Account();
-        account.setId(idGeneratorUtil.generateAccountId()); // 👈 Gán ID thủ công
+        account.setId(idGeneratorUtil.generateAccountId()); // Gán ID thủ công
         account.setUsername(request.getUsername());
         account.setPassword(request.getPassword());
         account.setEmail(request.getEmail());
@@ -68,7 +68,7 @@ public class AuthServiceImpl implements AuthService {
         accountRepository.save(account);
 
         Customer customer = new Customer();
-        customer.setId(idGeneratorUtil.generateCustomerId()); // 👈 Gán ID thủ công
+        customer.setId(idGeneratorUtil.generateCustomerId()); // Gán ID thủ công
         customer.setName(request.getName());
         customer.setEmail(request.getEmail());
         customer.setAccount(account);

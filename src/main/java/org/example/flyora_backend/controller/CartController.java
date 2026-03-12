@@ -27,13 +27,13 @@ public class CartController {
         description = """
             Nhận danh sách sản phẩm từ client thông qua query params.
 
-            ⚠️ Áp dụng khi dữ liệu đơn giản và số lượng ít.
+            Áp dụng khi dữ liệu đơn giản và số lượng ít.
 
-            ✅ Tham số dạng:
+            Tham số dạng:
             - productId: Danh sách id sản phẩm (VD: `productId=1&productId=2`)
             - quantity: Danh sách số lượng tương ứng (VD: `quantity=2&quantity=1`)
 
-            🔁 Trả về: Danh sách CartItemDTO gồm productId, name, imageUrl, quantity.
+            Trả về: Danh sách CartItemDTO gồm productId, name, imageUrl, quantity.
         """
     )
     public ResponseEntity<List<CartItemDTO>> getCart(
@@ -52,15 +52,15 @@ public class CartController {
         description = """
             Nhận danh sách sản phẩm từ client thông qua body JSON.
 
-            ✅ Body (List<CartRequestDTO>):
+            Body (List<CartRequestDTO>):
             - productId (Integer)
             - quantity (Integer)
 
-            ⚠️ Ưu điểm so với GET:
+            Ưu điểm so với GET:
             - Gửi được nhiều sản phẩm hơn, không giới hạn độ dài URL.
             - Dữ liệu rõ ràng và dễ mở rộng.
 
-            🔁 Trả về: Danh sách CartItemDTO gồm productId, name, imageUrl, quantity.
+            Trả về: Danh sách CartItemDTO gồm productId, name, imageUrl, quantity.
         """
     )
     public ResponseEntity<List<CartItemDTO>> viewCart(@RequestBody List<CartRequestDTO> requests) {
@@ -71,13 +71,13 @@ public class CartController {
     @Operation(
         summary = "Cập nhật số lượng sản phẩm trong giỏ hàng",
         description = """
-            ✅ Đường dẫn:
+            Đường dẫn:
             - productId: id sản phẩm muốn cập nhật
 
-            ✅ Query param:
+            Query param:
             - quantity (Integer): số lượng mới
 
-            🔁 Trả về: CartItemDTO đã cập nhật số lượng.
+            Trả về: CartItemDTO đã cập nhật số lượng.
         """
     )
     public ResponseEntity<CartItemDTO> updateQuantity(
@@ -90,10 +90,10 @@ public class CartController {
     @Operation(
         summary = "Xoá 1 sản phẩm khỏi giỏ hàng",
         description = """
-            ✅ Đường dẫn:
+            Đường dẫn:
             - productId: id sản phẩm muốn xoá
 
-            🔁 Trả về: Thông báo xoá thành công.
+            Trả về: Thông báo xoá thành công.
         """
     )
     public ResponseEntity<String> deleteItem(@PathVariable Integer productId) {
@@ -106,7 +106,7 @@ public class CartController {
         description = """
             Xoá tất cả sản phẩm đang có trong giỏ hàng phía client.
 
-            🔁 Trả về: Thông báo đã xoá giỏ hàng.
+            Trả về: Thông báo đã xoá giỏ hàng.
         """
     )
     public ResponseEntity<String> clearCart() {
