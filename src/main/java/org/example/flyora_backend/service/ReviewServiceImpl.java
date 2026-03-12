@@ -18,7 +18,7 @@ import lombok.RequiredArgsConstructor;
 public class ReviewServiceImpl implements ReviewService {
 
     private final ProductReviewRepository reviewRepository;
-    private final ProductRepository productRepository; // Cần repo này để tránh lỗi
+    private final ProductRepository productRepository;
     private final CustomerRepository customerRepository;
     private final IdGeneratorUtil idGeneratorUtil;
 
@@ -27,7 +27,6 @@ public class ReviewServiceImpl implements ReviewService {
         ProductReview review = new ProductReview();
         review.setId(idGeneratorUtil.generateProductReviewId());
 
-        // Load đầy đủ các đối tượng từ DB để đảm bảo tính nhất quán
         Customer customer = customerRepository.findById(dto.getCustomerId())
             .orElseThrow(() -> new RuntimeException("Không tìm thấy khách hàng"));
         
@@ -46,7 +45,6 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     public List<ProductReviewDTO> getReviewsByProduct(Integer productId) {
-        // Sử dụng một phương thức truy vấn tối ưu hơn để tránh N+1 Select
         List<ProductReview> reviews = reviewRepository.findByProductIdWithCustomer(productId);
         
         return reviews.stream().map(review -> new ProductReviewDTO(

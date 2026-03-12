@@ -27,11 +27,11 @@ public class PayOSServiceImpl implements PayOSService {
 
     @Override
     public Map<String, String> createPaymentLink(int orderId, int amount) {
-        // ❌ Đừng tạo orderCode mới ở đây
+        // Đừng tạo orderCode mới ở đây
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy đơn hàng"));
 
-        String orderCode = order.getOrderCode(); // ✅ Lấy từ DB
+        String orderCode = order.getOrderCode(); // Lấy từ DB
 
         try {
             CreatePaymentLinkRequest paymentData = CreatePaymentLinkRequest.builder()
@@ -59,11 +59,11 @@ public class PayOSServiceImpl implements PayOSService {
     @Override
     public void handlePaymentWebhook(WebhookType webhookData) {
 
-        log.info("📩 Dữ liệu webhook: {}", webhookData);
+        log.info("Dữ liệu webhook: {}", webhookData);
 
         WebhookData data = webhookData.getData();
         if (data == null || data.getOrderCode() == 0) {
-            log.error("❌ Thiếu orderCode trong webhook");
+            log.error("Thiếu orderCode trong webhook");
 
             return;
         }
@@ -75,27 +75,27 @@ public class PayOSServiceImpl implements PayOSService {
 
         try {
             Order order = orderRepository.findByOrderCode(orderCode)
-                    .orElseThrow(() -> new RuntimeException("❌ Không tìm thấy đơn hàng với orderCode: " + orderCode));
+                    .orElseThrow(() -> new RuntimeException("Không tìm thấy đơn hàng với orderCode: " + orderCode));
 
             if (success || "00".equals(statusCode)) {
                 if (!"PAID".equalsIgnoreCase(order.getStatus())) {
                     order.setStatus("PAID");
                     orderRepository.save(order);
-                    log.info("✅ Cập nhật trạng thái đơn hàng [{}] => PAID", orderCode);
+                    log.info("Cập nhật trạng thái đơn hàng [{}] => PAID", orderCode);
                 } else {
-                    log.info("ℹ️ Đơn hàng [{}] đã ở trạng thái PAID", orderCode);
+                    log.info("Đơn hàng [{}] đã ở trạng thái PAID", orderCode);
                 }
             } else {
                 // Nếu thanh toán không thành công
                 if (!"PAID".equalsIgnoreCase(order.getStatus())) {
                     order.setStatus("CANCELLED");
                     orderRepository.save(order);
-                    log.warn("⚠️ Cập nhật trạng thái đơn hàng [{}] => CANCELLED do thanh toán thất bại", orderCode);
+                    log.warn("Cập nhật trạng thái đơn hàng [{}] => CANCELLED do thanh toán thất bại", orderCode);
                 }
             }
 
         } catch (Exception e) {
-            log.error("❌ Lỗi cập nhật đơn hàng theo webhook: {}", e.getMessage(), e);
+            log.error("Lỗi cập nhật đơn hàng theo webhook: {}", e.getMessage(), e);
         }
 
     }
@@ -104,7 +104,7 @@ public class PayOSServiceImpl implements PayOSService {
 
     @Override
     public String confirmWebhook(WebhookURL body) {
-        log.info("🔔 Webhook xác nhận từ: {}", body.getWebhookUrl());
+        log.info("Webhook xác nhận từ: {}", body.getWebhookUrl());
         return "Webhook confirmed: " + body.getWebhookUrl();
     }
 }

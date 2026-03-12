@@ -24,22 +24,22 @@ public class WebhookController {
     //     description = """
     //         Endpoint này được GHN gọi tự động khi trạng thái đơn hàng thay đổi.
 
-    //         📦 Body (JSON từ GHN):
+    //         Body (JSON từ GHN):
     //         - OrderCode (String): Mã vận đơn GHN
     //         - Status (String): Trạng thái mới (VD: delivered, cancel, return...)
     //         - UpdatedDate (String - ISO datetime)
 
-    //         📌 Luồng xử lý:
+    //         Luồng xử lý:
     //         1. Nhận payload từ GHN
     //         2. Tìm DeliveryNote theo OrderCode
     //         3. Map trạng thái GHN sang trạng thái hệ thống
     //         4. Cập nhật Order trong database
     //         5. Gửi email thông báo cho khách hàng
 
-    //         🔁 Trả về:
+    //         Trả về:
     //         - message nếu xử lý thành công
 
-    //         ⚠️ Lưu ý:
+    //         Lưu ý:
     //         - Endpoint này KHÔNG dành cho frontend gọi.
     //         - Chỉ GHN mới được phép gọi (production nên có token hoặc xác thực IP).
     //     """

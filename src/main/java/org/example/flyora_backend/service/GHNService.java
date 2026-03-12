@@ -140,10 +140,6 @@ public class GHNService {
 
                 Map<String, Object> requestBody = new HashMap<>();
 
-                // ======================================================================
-                // PHẦN BỊ THIẾU CẦN BỔ SUNG ĐẦY ĐỦ VÀO ĐÂY
-                // ======================================================================
-
                 // 1. Thêm thông tin người gửi (lấy từ cấu hình server)
                 requestBody.put("from_district_id", this.shopDistrictId);
                 requestBody.put("from_ward_code", this.shopWardCode);
@@ -160,10 +156,6 @@ public class GHNService {
                 requestBody.put("insurance_value", feeRequest.getInsurance_value());
                 Integer serviceId = getServiceId(feeRequest.getTo_district_id());
                 requestBody.put("service_id", serviceId);
-
-                // ======================================================================
-                // KẾT THÚC PHẦN BỔ SUNG
-                // ======================================================================
 
                 // Dòng này để debug, bạn có thể xóa sau khi đã chạy thành công
                 System.out.println("Request Body to GHN: " + requestBody.toString());
@@ -255,7 +247,6 @@ public class GHNService {
 
                 if (dataObj instanceof Map<?, ?> dataMap) {
 
-                // Convert sang Map<String, Object> an toàn
                 return objectMapper.convertValue(
                         dataMap,
                         new com.fasterxml.jackson.core.type.TypeReference<Map<String, Object>>() {}

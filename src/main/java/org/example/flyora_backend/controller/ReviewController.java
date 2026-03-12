@@ -29,13 +29,13 @@ public class ReviewController {
         description = """
             Gửi đánh giá và bình luận của khách hàng về một sản phẩm đã mua.
 
-            ✅ Trường yêu cầu trong body (ProductReviewDTO):
+            Trường yêu cầu trong body (ProductReviewDTO):
             - customerId (Integer): ID của khách hàng
             - productId (Integer): ID của sản phẩm
             - rating (Integer): điểm đánh giá từ 1 đến 5
             - comment (String): nội dung đánh giá (tối đa 500 ký tự, có thể để trống)
 
-            🔁 Trả về: Thông báo thành công hoặc lỗi nếu có vấn đề xảy ra.
+            Trả về: Thông báo thành công hoặc lỗi nếu có vấn đề xảy ra.
         """
     )
     public ResponseEntity<?> submitReview(@Valid @RequestBody ProductReviewDTO request) {
@@ -55,10 +55,10 @@ public class ReviewController {
         description = """
             Trả về danh sách tất cả đánh giá của khách hàng cho một sản phẩm cụ thể.
 
-            ✅ Đường dẫn:
+            Đường dẫn:
             - productId (Integer): ID của sản phẩm cần lấy đánh giá
 
-            🔁 Trả về: Danh sách các đánh giá gồm thông tin customerId, productId, rating, comment.
+            Trả về: Danh sách các đánh giá gồm thông tin customerId, productId, rating, comment.
         """
     )
     public ResponseEntity<?> getReviewsForProduct(@PathVariable Integer productId) {

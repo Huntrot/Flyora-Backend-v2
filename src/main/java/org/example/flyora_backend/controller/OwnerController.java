@@ -43,20 +43,20 @@ public class OwnerController {
     private OwnerService ownerService;
 
     @Operation(summary = "Xem danh sách sản phẩm bán chạy theo doanh số", description = """
-                ✅ Dành cho Shop Owner:
+                Dành cho Shop Owner:
                 - Hệ thống trả về danh sách các sản phẩm thuộc Shop của người dùng,
                 được sắp xếp theo tổng số lượng bán ra (`totalSold`) giảm dần.
 
-                ✅ Response mỗi item gồm:
+                Response mỗi item gồm:
                 - productId: ID sản phẩm
                 - productName: Tên sản phẩm
                 - imageUrl: URL hình ảnh (lấy từ bảng chi tiết)
                 - totalSold: Tổng số lượng đã bán
                 - price: Giá sản phẩm
 
-                ❌ Nếu không phải ShopOwner: trả về HTTP 403 (FORBIDDEN)
+                Nếu không phải ShopOwner: trả về HTTP 403 (FORBIDDEN)
 
-                ❌ Nếu token không hợp lệ: trả về HTTP 401 (UNAUTHORIZED)
+                Nếu token không hợp lệ: trả về HTTP 401 (UNAUTHORIZED)
             """)
     @GetMapping("/dashboard/products/top-sales")
     public ResponseEntity<List<TopProductDTO>> getTopSellingProducts(@RequestHeader("Authorization") String token) {
@@ -74,19 +74,19 @@ public class OwnerController {
     }
 
     @Operation(summary = "Thêm sản phẩm mới", description = """
-                ✅ Dành cho ShopOwner:
+                Dành cho ShopOwner:
                 - Thêm sản phẩm mới vào hệ thống, tự động gắn chi tiết theo loại sản phẩm:
                   FOODS, TOYS hoặc FURNITURE.
 
-                ✅ Request:
+                Request:
                 - Truyền `CreateProductDTO` bao gồm thông tin sản phẩm & chi tiết.
 
-                📦 Response:
+                Response:
                 - message: Thông báo thành công
                 - productId: ID sản phẩm vừa tạo
 
-                ❌ Nếu không phải ShopOwner: trả về HTTP 403 (FORBIDDEN)
-                ❌ Nếu dữ liệu không hợp lệ: trả về HTTP 400 (BAD REQUEST)
+                Nếu không phải ShopOwner: trả về HTTP 403 (FORBIDDEN)
+                Nếu dữ liệu không hợp lệ: trả về HTTP 400 (BAD REQUEST)
             """)
     @PostMapping("/products")
     public ResponseEntity<?> addProduct(
@@ -111,18 +111,16 @@ public class OwnerController {
         }
     }
 
-    // ========== PHẦN ĐÃ SỬA LỖI ==========
-    // Đã xóa phương thức getAllProducts() cũ và chỉ giữ lại phương thức
     // searchProducts() mới.
     @Operation(summary = "Lấy và tìm kiếm sản phẩm của shop", description = """
-                ✅ Dành cho ShopOwner và Staff:
+                Dành cho ShopOwner và Staff:
                 - Trả về danh sách tất cả sản phẩm thuộc Shop của người dùng.
                 - Hỗ trợ tìm kiếm theo tên sản phẩm bằng cách truyền query param `keyword`.
                 - Nếu không truyền `keyword`, hệ thống sẽ trả về tất cả sản phẩm.
                 - Sắp xếp theo ID sản phẩm tăng dần.
                 - Trạng thái sản phẩm được tính toán: "Còn hàng" hoặc "Hết hàng".
 
-                📦 Mỗi item trong danh sách trả về gồm:
+                Mỗi item trong danh sách trả về gồm:
                 - id: ID sản phẩm
                 - name: Tên sản phẩm
                 - price: Giá bán
@@ -130,11 +128,11 @@ public class OwnerController {
                 - status: Trạng thái ("Còn hàng" / "Hết hàng")
                 - imageUrl: URL hình ảnh của sản phẩm
 
-                ❓ **Cách dùng:**
+                **Cách dùng:**
                 - Lấy tất cả sản phẩm: `GET /api/v1/owner/products`
                 - Tìm kiếm sản phẩm có tên chứa "gỗ": `GET /api/v1/owner/products?keyword=gỗ`
 
-                ❌ Nếu không phải ShopOwner hoặc Staff: Trả về HTTP 403 (FORBIDDEN)
+                Nếu không phải ShopOwner hoặc Staff: Trả về HTTP 403 (FORBIDDEN)
             """)
     @GetMapping("/products")
     public ResponseEntity<?> searchProducts(
@@ -163,15 +161,15 @@ public class OwnerController {
     }
 
     @Operation(summary = "Chỉnh sửa sản phẩm", description = """
-                ✅ Dành cho ShopOwner và Staff:
+                Dành cho ShopOwner và Staff:
                 - Cập nhật thông tin sản phẩm theo ID.
                 - Bao gồm cập nhật cả thông tin chi tiết (FOODS, TOYS, FURNITURE).
 
-                📦 Response:
+                Response:
                 - Trả về `Product` sau khi cập nhật.
 
-                ❌ Nếu không có quyền: HTTP 403
-                ❌ Nếu dữ liệu không hợp lệ: HTTP 400
+                Nếu không có quyền: HTTP 403
+                Nếu dữ liệu không hợp lệ: HTTP 400
             """)
     @PutMapping("/products/{id}")
     public ResponseEntity<?> editProduct(
@@ -196,14 +194,14 @@ public class OwnerController {
     }
 
     @Operation(summary = "Xóa sản phẩm", description = """
-                ✅ Chỉ dành cho ShopOwner:
+                Chỉ dành cho ShopOwner:
                 - Xóa sản phẩm theo ID.
 
-                📦 Response:
+                Response:
                 - Trả về chuỗi thông báo "Xóa sản phẩm thành công"
 
-                ❌ Nếu không phải ShopOwner: HTTP 403
-                ❌ Nếu sản phẩm không tồn tại hoặc không thuộc quyền sở hữu: HTTP 400
+                Nếu không phải ShopOwner: HTTP 403
+                Nếu sản phẩm không tồn tại hoặc không thuộc quyền sở hữu: HTTP 400
             """)
     @DeleteMapping("/products/{id}")
     public ResponseEntity<?> deleteProduct(

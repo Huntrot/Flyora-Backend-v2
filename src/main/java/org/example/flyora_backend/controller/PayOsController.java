@@ -6,8 +6,6 @@ import org.example.flyora_backend.service.PayOSService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import lombok.RequiredArgsConstructor;
-
 @RestController
 @RequestMapping("/api/payos")
 @RequiredArgsConstructor

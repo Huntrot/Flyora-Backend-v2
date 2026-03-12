@@ -35,7 +35,7 @@ public class GHNController {
     @Autowired
     private AccountRepository accountRepository;
     @Autowired
-    private DeliveryNoteRepository deliveryNoteRepository; // Inject repo này để kiểm tra bảo mật
+    private DeliveryNoteRepository deliveryNoteRepository;
 
     private Account verifyAccess(Integer requesterId) {
         Account acc = accountRepository.findById(requesterId)
@@ -50,7 +50,7 @@ public class GHNController {
     @Operation(summary = "Lấy danh sách Tỉnh/Thành", description = """
             Lấy danh sách tất cả các tỉnh/thành phố của Việt Nam để hiển thị cho người dùng chọn.
 
-            🔑 **Quyền truy cập:** Bất kỳ tài khoản nào đã được duyệt.
+            **Quyền truy cập:** Bất kỳ tài khoản nào đã được duyệt.
             - **`requesterId`** (param): ID của tài khoản thực hiện yêu cầu.
             """)
     public ResponseEntity<List<ProvinceDTO>> getProvinces(@RequestParam Integer requesterId) {
@@ -62,7 +62,7 @@ public class GHNController {
     @Operation(summary = "Lấy danh sách Quận/Huyện theo Tỉnh", description = """
             Lấy danh sách các quận/huyện thuộc một tỉnh/thành cụ thể.
 
-            🔑 **Quyền truy cập:** Bất kỳ tài khoản nào đã được duyệt.
+            **Quyền truy cập:** Bất kỳ tài khoản nào đã được duyệt.
             - **`requesterId`** (param): ID của tài khoản thực hiện yêu cầu.
             - **`provinceId`** (param): ID của tỉnh/thành đã chọn.
             """)
@@ -77,7 +77,7 @@ public class GHNController {
     @Operation(summary = "Lấy danh sách Phường/Xã theo Quận", description = """
             Lấy danh sách các phường/xã thuộc một quận/huyện cụ thể.
 
-            🔑 **Quyền truy cập:** Bất kỳ tài khoản nào đã được duyệt.
+            **Quyền truy cập:** Bất kỳ tài khoản nào đã được duyệt.
             - **`requesterId`** (param): ID của tài khoản thực hiện yêu cầu.
             - **`districtId`** (param): ID của quận/huyện đã chọn.
             """)
@@ -93,9 +93,9 @@ public class GHNController {
             Tính toán chi phí vận chuyển dự kiến trước khi khách hàng đặt hàng.
             Frontend nên gọi API này mỗi khi người dùng thay đổi địa chỉ hoặc giỏ hàng.
 
-            🔑 **Quyền truy cập:** Bất kỳ tài khoản nào đã được duyệt.
+            **Quyền truy cập:** Bất kỳ tài khoản nào đã được duyệt.
 
-            ✅ **Body yêu cầu (CalculateFeeRequestDTO):**
+            **Body yêu cầu (CalculateFeeRequestDTO):**
             - `to_district_id`, `to_ward_code`: Địa chỉ người nhận.
             - `weight`, `height`, `length`, `width`: Thông tin gói hàng.
             - `insurance_value`: Giá trị đơn hàng.
@@ -113,14 +113,13 @@ public class GHNController {
             Gửi thông tin đơn hàng sang hệ thống của GHN để đăng ký một đơn vận chuyển mới.
             **Lưu ý:** Sau bước này, bạn phải lưu lại `order_code` trả về vào database của mình.
 
-            🔑 **Quyền truy cập:** Bất kỳ tài khoản nào đã được duyệt.
+            **Quyền truy cập:** Bất kỳ tài khoản nào đã được duyệt.
 
             - **`requesterId`** (param): ID của tài khoản thực hiện yêu cầu.
 
-            ✅ **Trường yêu cầu trong body (CreateOrderRequestDTO):** Xem chi tiết trong Schemas.
-                **Lưu ý chỉ được sử dụng số điện thoại sau: "0942921287"
+            **Trường yêu cầu trong body (CreateOrderRequestDTO):** Xem chi tiết trong Schemas.
 
-            🔁 **Trả về:** Một đối tượng JSON chứa thông tin đơn hàng đã tạo thành công, bao gồm `order_code` quan trọng.
+            **Trả về:** Một đối tượng JSON chứa thông tin đơn hàng đã tạo thành công, bao gồm `order_code` quan trọng.
             """)
     public ResponseEntity<Map<String, Object>> createShippingOrder(
             @RequestParam Integer requesterId,
@@ -139,12 +138,12 @@ public class GHNController {
     @Operation(summary = "Theo dõi trạng thái đơn hàng", description = """
             Lấy thông tin chi tiết và lịch sử trạng thái của một đơn hàng qua GHN.
 
-            🔑 **Quyền truy cập:** Khách hàng (chỉ xem được đơn của mình) hoặc Nhân viên/Chủ shop.
+            **Quyền truy cập:** Khách hàng (chỉ xem được đơn của mình) hoặc Nhân viên/Chủ shop.
 
             - **`requesterId`** (param): ID của tài khoản thực hiện yêu cầu.
             - **`orderCode`** (param): Mã vận đơn do GHN cung cấp (lấy từ bảng DeliveryNote).
 
-            🔁 **Trả về:** Một đối tượng JSON chứa thông tin chi tiết của đơn hàng, bao gồm `status`, `log` (lịch sử di chuyển), `expected_delivery_time`,...
+            **Trả về:** Một đối tượng JSON chứa thông tin chi tiết của đơn hàng, bao gồm `status`, `log` (lịch sử di chuyển), `expected_delivery_time`,...
             """)
     public ResponseEntity<?> trackOrder(
             @RequestParam Integer requesterId,

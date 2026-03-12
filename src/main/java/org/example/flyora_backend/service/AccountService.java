@@ -44,7 +44,6 @@ public class AccountService {
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy role"));
 
         // 1. Tạo tài khoản Account
-        // 1. Tạo tài khoản Account
         Account acc = new Account();
         acc.setId(idGeneratorUtil.generateAccountId());
         acc.setUsername(dto.getUsername());
@@ -53,7 +52,7 @@ public class AccountService {
         acc.setEmail(dto.getEmail());
         acc.setRole(role);
 
-        // ✅ Mặc định luôn active & approved
+        // Mặc định luôn active & approved
         acc.setIsActive(true);
         acc.setIsApproved(true);
 
@@ -146,11 +145,11 @@ public class AccountService {
 
         String role = account.getRole().getName();
 
-        // ✅ Xóa access log & notification liên quan
+        // Xóa access log & notification liên quan
         accessLogRepository.deleteByAccountId(id);
         notificationRepository.deleteByRecipientId(id);
 
-        // ✅ Nếu là CUSTOMER, xóa theo thứ tự phụ thuộc
+        // Nếu là CUSTOMER, xóa theo thứ tự phụ thuộc
         if ("Customer".equals(role)) {
             Customer customer = customerRepository.findByAccountId(id)
                     .orElseThrow(() -> new RuntimeException("Không tìm thấy customer liên kết với account"));
@@ -177,7 +176,7 @@ public class AccountService {
             customerRepository.deleteByAccountId(id);
         }
 
-        // ✅ Các vai trò khác: đơn giản hơn
+        // Các vai trò khác: đơn giản hơn
         else if ("ShopOwner".equals(role)) {
             shopOwnerRepository.deleteByAccountId(id);
         } else if ("SalesStaff".equals(role)) {
@@ -194,7 +193,7 @@ public class AccountService {
             adminRepository.deleteByAccountId(id);
         }
 
-        // ✅ Cuối cùng xóa Account
+        // Cuối cùng xóa Account
         accountRepository.deleteById(id);
     }
 

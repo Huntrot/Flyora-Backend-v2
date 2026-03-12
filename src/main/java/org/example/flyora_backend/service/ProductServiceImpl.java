@@ -20,7 +20,6 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<ProductListDTO> filterProducts(ProductFilterDTO filter) {
-        // BỎ ĐI VIỆC TẠO Pageable
         return productRepository.filterProducts(
                 filter.getName(),
                 filter.getCategoryId(),
