@@ -25,7 +25,7 @@ public class ChatBotServiceImpl implements ChatBotService {
         chat.setCustomer(customer);
 
         chat.setMessage(dto.message());
-        chat.setResponse(null); // chưa phản hồi
+        chat.setResponse(null);
         chat.setCreatedAt(Instant.now());
 
         chatBotRepository.save(chat);

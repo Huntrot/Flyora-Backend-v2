@@ -119,6 +119,7 @@ public class EmailServiceImpl implements EmailService {
             String customerEmail =
                     order.getCustomer().getEmail();
 
+            helper.setFrom("captainparrot13042005@gmail.com");
             helper.setTo(customerEmail);
             helper.setSubject("Cập nhật trạng thái đơn hàng #" 
                             + order.getOrderCode());
