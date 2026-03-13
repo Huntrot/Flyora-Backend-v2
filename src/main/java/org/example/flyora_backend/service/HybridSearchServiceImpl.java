@@ -30,9 +30,12 @@ public class HybridSearchServiceImpl implements HybridSearchService {
 
     @Override
     public List<ProductListDTO> hybridSearch(String query) {
+        log.info("=== Hybrid Search Start: '{}' ===", query);
         if (shouldUseTraditionalSearch(query)) {
+            log.info("Using TRADITIONAL search");
             return productRepository.searchByName(query);
         } else {
+            log.info("Using AI search");
             return aiSearch(query);
         }
     }
@@ -42,49 +45,101 @@ public class HybridSearchServiceImpl implements HybridSearchService {
             return true;
         }
 
-        String trimmed = query.trim();
-        List<ProductListDTO> directResults = productRepository.searchByName(trimmed);
-        if (!directResults.isEmpty()) {
-            return true;
+        String trimmed = query.trim().toLowerCase();
+        
+        // Nếu query quá ngắn (1-2 từ đơn giản), dùng traditional
+        String[] words = trimmed.split("\\s+");
+        if (words.length <= 2 && !containsComplexPattern(trimmed)) {
+            List<ProductListDTO> directResults = productRepository.searchByName(trimmed);
+            if (!directResults.isEmpty()) {
+                return true;
+            }
         }
         
+        // Nếu query phức tạp (có "cho", "tìm", "muốn", v.v.), dùng AI
         return false;
+    }
+    
+    private boolean containsComplexPattern(String query) {
+        // Kiểm tra xem có pattern phức tạp không
+        return query.contains(" cho ") || 
+               query.contains("tìm ") || 
+               query.contains("muốn ") || 
+               query.contains("cần ") ||
+               query.contains(" của ") ||
+               query.contains(" dành ");
     }
 
     private List<ProductListDTO> aiSearch(String query) {
         try {
-            String keywords = extractKeywordsWithAI(query);
-            if (keywords != null && !keywords.isEmpty()) {
-                List<ProductListDTO> results = productRepository.searchByName(keywords);
+            Map<String, String> extractedKeywords = extractKeywordsWithAI(query);
+            if (extractedKeywords != null) {
+                String productKeyword = extractedKeywords.get("product");
+                String birdKeyword = extractedKeywords.get("bird");
+                
+                List<ProductListDTO> results = productRepository.searchByNameAndBirdType(productKeyword, birdKeyword);
                 if (!results.isEmpty()) {
                     return results;
                 }
+                
+                // Nếu AI đã trích xuất được, dùng luôn kết quả đó cho fallback
+                if (productKeyword != null || birdKeyword != null) {
+                    return results; // Trả về empty list thay vì tìm lại
+                }
             }
         } catch (Exception e) {
-            // AI failed, use fallback
+            // AI search failed, fallback to simple search
         }
         
-        String keyword = extractSimpleKeyword(query);
-        return productRepository.searchByName(keyword);
+        Map<String, String> fallbackKeywords = extractSimpleKeyword(query);
+        List<ProductListDTO> results = productRepository.searchByNameAndBirdType(
+            fallbackKeywords.get("product"), 
+            fallbackKeywords.get("bird")
+        );
+        return results;
     }
 
-    private String extractSimpleKeyword(String query) {
+    private Map<String, String> extractSimpleKeyword(String query) {
+        Map<String, String> keywords = new HashMap<>();
         String lower = query.toLowerCase();
-        if (lower.contains("thức ăn") || lower.contains("ăn")) return "thức ăn";
-        if (lower.contains("đồ chơi") || lower.contains("chơi")) return "đồ chơi";
-        if (lower.contains("lồng")) return "lồng";
-        if (lower.contains("phụ kiện")) return "phụ kiện";
-        if (lower.contains("hạt")) return "hạt";
-        if (lower.contains("vitamin")) return "vitamin";
-        // Lấy từ đầu tiên có nghĩa
-        String[] words = query.split("\\s+");
-        for (String word : words) {
-            if (word.length() > 2) return word;
+        
+        // Trích xuất loại sản phẩm
+        String productKeyword = null;
+        if (lower.contains("thức ăn") || lower.contains("ăn")) productKeyword = "thức ăn";
+        else if (lower.contains("đồ chơi") || lower.contains("chơi")) productKeyword = "đồ chơi";
+        else if (lower.contains("lồng")) productKeyword = "lồng";
+        else if (lower.contains("phụ kiện")) productKeyword = "phụ kiện";
+        else if (lower.contains("hạt")) productKeyword = "hạt";
+        else if (lower.contains("vitamin")) productKeyword = "vitamin";
+        
+        // Trích xuất loại chim
+        String birdKeyword = null;
+        if (lower.contains("vẹt")) birdKeyword = "vẹt";
+        else if (lower.contains("chào mào")) birdKeyword = "chào mào";
+        else if (lower.contains("chim cảnh")) birdKeyword = "chim cảnh";
+        else if (lower.contains("yến")) birdKeyword = "yến";
+        else if (lower.contains("chích chòe")) birdKeyword = "chích chòe";
+        else if (lower.contains("hoạ mi")) birdKeyword = "hoạ mi";
+        else if (lower.contains("cu gáy")) birdKeyword = "cu gáy";
+        else if (lower.contains("bồ câu")) birdKeyword = "bồ câu";
+        
+        // Nếu không tìm thấy gì, lấy từ đầu tiên có nghĩa
+        if (productKeyword == null && birdKeyword == null) {
+            String[] words = query.split("\\s+");
+            for (String word : words) {
+                if (word.length() > 2) {
+                    productKeyword = word;
+                    break;
+                }
+            }
         }
-        return query;
+        
+        keywords.put("product", productKeyword);
+        keywords.put("bird", birdKeyword);
+        return keywords;
     }
 
-    private String extractKeywordsWithAI(String query) {
+    private Map<String, String> extractKeywordsWithAI(String query) {
         int maxRetries = 3;
         int retryDelay = 5000;
         
@@ -96,13 +151,16 @@ public class HybridSearchServiceImpl implements HybridSearchService {
                 
                 String prompt = "You are a product search assistant for a bird shop.\n" +
                     "User query: \"" + query + "\"\n\n" +
-                    "Extract 1-3 MOST IMPORTANT keywords to search products in Vietnamese.\n" +
-                    "Focus on: product type (thức ăn, đồ chơi, lồng, phụ kiện), bird type, key features.\n" +
-                    "Return ONLY keywords separated by space, NO explanation.\n" +
+                    "Extract keywords in Vietnamese and return in JSON format with 2 fields:\n" +
+                    "1. \"product\": product type (thức ăn, đồ chơi, lồng, phụ kiện, hạt, vitamin) or null\n" +
+                    "2. \"bird\": bird type (vẹt, chào mào, chim cảnh, yến, chích chòe, hoạ mi, cu gáy, bồ câu) or null\n\n" +
+                    "Return ONLY valid JSON, NO explanation, NO markdown.\n\n" +
                     "Examples:\n" +
-                    "- 'đồ cho chim non ít rơi vãi' → 'thức ăn'\n" +
-                    "- 'tìm đồ chơi cho vẹt' → 'đồ chơi'\n" +
-                    "- 'lồng đẹp cho chim cảnh' → 'lồng'";
+                    "- 'đồ ăn cho chào mào' → {\"product\":\"thức ăn\",\"bird\":\"chào mào\"}\n" +
+                    "- 'tìm đồ chơi cho vẹt' → {\"product\":\"đồ chơi\",\"bird\":\"vẹt\"}\n" +
+                    "- 'lồng đẹp cho chim cảnh' → {\"product\":\"lồng\",\"bird\":\"chim cảnh\"}\n" +
+                    "- 'thức ăn cho chim' → {\"product\":\"thức ăn\",\"bird\":null}\n" +
+                    "- 'đồ chơi' → {\"product\":\"đồ chơi\",\"bird\":null}";
 
                 Map<String, Object> requestBody = new HashMap<>();
                 List<Map<String, Object>> contents = new ArrayList<>();
@@ -139,8 +197,32 @@ public class HybridSearchServiceImpl implements HybridSearchService {
                 Map<String, Object> partResponse = partsResponse.get(0);
 
                 String result = ((String) partResponse.get("text")).trim();
-                result = result.replace("\"", "").replace("'", "").replace("\n", " ");
-                return result;
+                // Loại bỏ markdown code block nếu có
+                result = result.replace("```json", "").replace("```", "").trim();
+                
+                // Parse JSON response
+                try {
+                    Map<String, String> keywords = new HashMap<>();
+                    // Simple JSON parsing
+                    result = result.replace("{", "").replace("}", "");
+                    String[] pairs = result.split(",");
+                    
+                    for (String pair : pairs) {
+                        String[] keyValue = pair.split(":");
+                        if (keyValue.length == 2) {
+                            String key = keyValue[0].trim().replace("\"", "");
+                            String value = keyValue[1].trim().replace("\"", "");
+                            if (!value.equals("null") && !value.isEmpty()) {
+                                keywords.put(key, value);
+                            } else {
+                                keywords.put(key, null);
+                            }
+                        }
+                    }
+                    return keywords;
+                } catch (Exception parseEx) {
+                    return null;
+                }
                 
             } catch (org.springframework.web.reactive.function.client.WebClientResponseException.TooManyRequests e) {
                 if (attempt == maxRetries - 1) {
