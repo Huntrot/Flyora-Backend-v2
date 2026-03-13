@@ -89,7 +89,7 @@ public class OrderServiceImpl implements OrderService {
         Order order = orderRepository.findById(dto.getOrderId())
                 .orElseThrow(() -> new RuntimeException("Order not found"));
 
-        if (!order.getCustomer().getId().equals(dto.getCustomerId())) {
+        if (!order.getCustomer().getAccount().getId().equals(dto.getCustomerId())) {
             throw new RuntimeException("Customer ID không khớp với đơn hàng.");
         }
 
