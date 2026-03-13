@@ -46,8 +46,10 @@ public class OrderServiceImpl implements OrderService {
         order.setId(idGeneratorUtil.generateOrderId());
 
         Customer customer = customerRepository
-        .findById(dto.getCustomerId())
-        .orElseThrow(() -> new RuntimeException("Customer not found with id: " + dto.getCustomerId()));
+            .findByAccountId(dto.getCustomerId())
+            .orElseThrow(() -> new RuntimeException(
+                "Customer not found for account id: " + dto.getCustomerId()
+            ));
         
         order.setCustomer(customer);
         order.setStatus("PENDING");
