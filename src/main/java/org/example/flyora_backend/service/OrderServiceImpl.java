@@ -138,7 +138,7 @@ public class OrderServiceImpl implements OrderService {
         payment.setStatus("PENDING_COD");
         paymentRepository.save(payment);
 
-        return Map.of("paymentId", payment.getId(), "orderStatus", order.getStatus());
+        return Map.of("paymentId", order.getOrderCode(), "orderStatus", order.getStatus());
     }
 //////////////////////////////////////////////////////////
 
@@ -165,7 +165,7 @@ public class OrderServiceImpl implements OrderService {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         ghnRequest.setCod_amount(codAmount.intValue());
-        ghnRequest.setContent("Flyora - Don hang #" + order.getId());
+        ghnRequest.setContent("Flyora - Don hang #" + order.getOrderCode());
 
         int totalWeight = order.getOrderDetails().stream()
                 .mapToInt(item -> {
@@ -208,14 +208,23 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public List<OrderHistoryDTO> getOrdersByCustomer(Integer customerId) {
-        List<Order> orders = orderRepository.findByCustomerIdOrderByCreatedAtDesc(customerId);
+
+        Customer customer = customerRepository
+                .findByAccountId(customerId)
+                .orElseThrow(() -> new RuntimeException(
+                        "Customer not found for account id: " + customerId));
+
+        List<Order> orders =
+                orderRepository.findByCustomerIdOrderByCreatedAtDesc(customer.getId());
 
         return orders.stream().map(order -> {
-            List<OrderDetailDTO> details = order.getOrderDetails().stream().map(detail -> new OrderDetailDTO(
-                    detail.getProduct().getId(),
-                    detail.getProduct().getName(),
-                    detail.getQuantity(),
-                    detail.getPrice())).toList();
+            List<OrderDetailDTO> details = order.getOrderDetails().stream()
+                    .map(detail -> new OrderDetailDTO(
+                            detail.getProduct().getId(),
+                            detail.getProduct().getName(),
+                            detail.getQuantity(),
+                            detail.getPrice()))
+                    .toList();
 
             return new OrderHistoryDTO(
                     order.getId(),
