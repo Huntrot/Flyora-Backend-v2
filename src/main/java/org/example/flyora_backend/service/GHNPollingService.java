@@ -27,7 +27,11 @@ public class GHNPollingService {
     @Scheduled(fixedRate = 300000)
     public void syncShippingStatus() {
 
+        System.out.println("[GHN-POLL] Scheduler triggered → checking delivery status...");
+
         List<DeliveryNote> notes = deliveryNoteRepository.findIncompleteWithOrder();
+
+        int updatedCount = 0;
 
         for (DeliveryNote note : notes) {
 
@@ -62,6 +66,13 @@ public class GHNPollingService {
                 if (order.getStatus() == null ||
                         !order.getStatus().equalsIgnoreCase(mappedStatus)) {
 
+                    System.out.println(
+                        "[GHN-POLL] Status UPDATED | Tracking: " + trackingNumber +
+                        " | Old: " + order.getStatus() +
+                        " | New: " + mappedStatus
+                    );
+                    updatedCount++;
+                    
                     order.setStatus(mappedStatus);
                     orderRepository.save(order);
 
@@ -80,6 +91,10 @@ public class GHNPollingService {
                 } else {
 
                     // Update last checked time even if status unchanged
+                    System.out.println(
+                        "[GHN-POLL] Status UNCHANGED | Tracking: " + trackingNumber +
+                        " | Current: " + order.getStatus()
+                    );
                     note.setLastCheckedAt(Instant.now());
                     deliveryNoteRepository.save(note);
                 }
@@ -107,6 +122,11 @@ public class GHNPollingService {
 
                 System.out.println("GHN polling error for " + trackingNumber + ": " + e.getMessage());
             }
+        }
+        if (updatedCount == 0) {
+            System.out.println(
+                "[GHN-POLL] No order status changes detected. System idle → Render may enter sleep mode."
+            );
         }
     }
 
