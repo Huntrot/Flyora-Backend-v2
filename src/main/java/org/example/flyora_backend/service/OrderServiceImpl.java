@@ -46,8 +46,9 @@ public class OrderServiceImpl implements OrderService {
         order.setId(idGeneratorUtil.generateOrderId());
 
         Customer customer = customerRepository
-            .findByAccountId(dto.getCustomerId())
-            .orElseThrow(() -> new RuntimeException("Customer not found with accountId: " + dto.getCustomerId()));
+        .findById(dto.getCustomerId())
+        .orElseThrow(() -> new RuntimeException("Customer not found with id: " + dto.getCustomerId()));
+        
         order.setCustomer(customer);
         order.setStatus("PENDING");
         order.setCreatedAt(new Timestamp(System.currentTimeMillis()));
@@ -89,7 +90,7 @@ public class OrderServiceImpl implements OrderService {
         Order order = orderRepository.findById(dto.getOrderId())
                 .orElseThrow(() -> new RuntimeException("Order not found"));
 
-        if (!order.getCustomer().getAccount().getId().equals(dto.getCustomerId())) {
+        if (!order.getCustomer().getId().equals(dto.getCustomerId())) {
             throw new RuntimeException("Customer ID không khớp với đơn hàng.");
         }
 
