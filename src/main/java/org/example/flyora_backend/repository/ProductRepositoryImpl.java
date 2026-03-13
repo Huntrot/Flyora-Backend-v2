@@ -149,6 +149,60 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
     }
 
     @Override
+    public List<ProductListDTO> searchByNameAndBirdType(String productName, String birdType) {
+        StringBuilder sql = new StringBuilder("""
+                    SELECT p.id, p.name, c.name AS category, bt.name AS birdType,
+                        p.price, p.stock,
+                        COALESCE(fd.image_url, td.image_url, fud.image_url) AS imageUrl
+                    FROM Product p
+                    JOIN ProductCategory c ON p.category_id = c.id
+                    JOIN BirdType bt ON p.bird_type_id = bt.id
+                    LEFT JOIN FoodDetail fd ON p.id = fd.product_id AND c.name = 'FOODS'
+                    LEFT JOIN ToyDetail td ON p.id = td.product_id AND c.name = 'TOYS'
+                    LEFT JOIN FurnitureDetail fud ON p.id = fud.product_id AND c.name = 'FURNITURE'
+                    WHERE 1=1
+                """);
+
+        if (productName != null && !productName.trim().isEmpty()) {
+            sql.append(" AND LOWER(p.name) LIKE CONCAT('%', LOWER(:productName), '%')");
+        }
+        
+        if (birdType != null && !birdType.trim().isEmpty()) {
+            sql.append(" AND LOWER(bt.name) LIKE CONCAT('%', LOWER(:birdType), '%')");
+        }
+        
+        sql.append(" ORDER BY p.name ASC");
+
+        Query query = em.createNativeQuery(sql.toString());
+        
+        if (productName != null && !productName.trim().isEmpty()) {
+            query.setParameter("productName", productName);
+        }
+        
+        if (birdType != null && !birdType.trim().isEmpty()) {
+            query.setParameter("birdType", birdType);
+        }
+
+        @SuppressWarnings("unchecked")
+        List<Object[]> rows = query.getResultList();
+
+        List<ProductListDTO> result = new ArrayList<>();
+        for (Object[] row : rows) {
+            ProductListDTO dto = new ProductListDTO();
+            dto.setId((Integer) row[0]);
+            dto.setName((String) row[1]);
+            dto.setCategory((String) row[2]);
+            dto.setBirdType((String) row[3]);
+            dto.setPrice((BigDecimal) row[4]);
+            dto.setStock((Integer) row[5]);
+            dto.setImageUrl((String) row[6]);
+            result.add(dto);
+        }
+
+        return result;
+    }
+
+    @Override
     public List<TopProductDTO> findTopSellingProductsByShopOwner() {
         String sql = """
                     SELECT p.id, p.name, p.price,

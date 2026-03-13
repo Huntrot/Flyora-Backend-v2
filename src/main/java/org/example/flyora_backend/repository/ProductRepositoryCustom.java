@@ -20,6 +20,8 @@ public interface ProductRepositoryCustom {
 
     List<ProductListDTO> searchByName(String name);
 
+    List<ProductListDTO> searchByNameAndBirdType(String productName, String birdType);
+
     List<TopProductDTO> findTopSellingProductsByShopOwner();
 
     List<OwnerProductListDTO> findAllByShopOwnerIdOrderByIdAsc(int ownerId);
