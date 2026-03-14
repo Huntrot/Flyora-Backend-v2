@@ -90,7 +90,7 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     public Map<String, Object> createPayment(CreatePaymentDTO dto) {
         Order order = orderRepository.findById(dto.getOrderId())
-                .orElseThrow(() -> new RuntimeException("Order not found"));
+            .orElseThrow(() -> new RuntimeException("Order not found"));
 
         Customer customer = customerRepository
                 .findByAccountId(dto.getCustomerId())
