@@ -81,7 +81,7 @@ public class OrderServiceImpl implements OrderService {
         Order savedOrder = orderRepository.save(order);
 
         return Map.of(
-                "orderId", savedOrder.getOrderCode(),
+                "orderId", savedOrder.getId(),
                 "orderCode", savedOrder.getOrderCode(),
                 "status", savedOrder.getStatus());
     }
@@ -90,7 +90,7 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     public Map<String, Object> createPayment(CreatePaymentDTO dto) {
         Order order = orderRepository.findById(dto.getOrderId())
-                .orElseThrow(() -> new RuntimeException("Order not found"));
+            .orElseThrow(() -> new RuntimeException("Order not found"));
 
         Customer customer = customerRepository
                 .findByAccountId(dto.getCustomerId())
@@ -138,7 +138,7 @@ public class OrderServiceImpl implements OrderService {
         payment.setStatus("PENDING_COD");
         paymentRepository.save(payment);
 
-        return Map.of("paymentId", order.getOrderCode(), "orderStatus", order.getStatus());
+        return Map.of("paymentId", payment.getId(), "orderStatus", order.getStatus());
     }
 //////////////////////////////////////////////////////////
 
